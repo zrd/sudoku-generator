@@ -5,3 +5,6 @@ from dataclasses import dataclass
 class Digit:
     symbol: str
     value: int
+
+    def __str__(self):
+        return self.symbol
