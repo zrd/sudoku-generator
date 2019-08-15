@@ -8,7 +8,7 @@ from symbols import SYMBOLS
 
 
 class Puzzle:
-    def __init__(self, complexity: int = 3, drawing_mode: str = "utf8"):
+    def __init__(self, complexity: int = 3, drawing_mode: str = "utf8") -> None:
         self.size = complexity ** 2
         self.digits = []
         for i, symbol in enumerate(SYMBOLS):
@@ -139,7 +139,7 @@ class Puzzle:
 
 
 class Box:
-    def __init__(self, complexity: int, null_digit: Digit):
+    def __init__(self, complexity: int, null_digit: Digit) -> None:
         self.complexity = complexity
         self.null_digit = null_digit
         self.sequence: List[List[Digit]] = [
@@ -165,19 +165,6 @@ class Box:
 
     def delete(self, row: int, col: int):
         self.insert(self.null_digit, row, col)
-
-
-class Line:
-    def __init__(self):
-        self.digits = []
-
-
-class Row(Line):
-    pass
-
-
-class Column(Line):
-    pass
 
 
 p = Puzzle(3)
