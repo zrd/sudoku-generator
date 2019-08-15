@@ -179,5 +179,7 @@ class Box:
         self.insert(self.null_digit, row, col)
 
 
-p = Puzzle(3)
-sys.stdout.write(str(p) + "\n")
+for sz in range(1, 7):
+    for dm in ("utf8", "ascii", "whitespace"):
+        p = Puzzle(sz, drawing_mode=dm)
+        sys.stdout.write(str(p) + "\n\n")
