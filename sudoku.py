@@ -75,10 +75,20 @@ class Puzzle:
         return "\n".join(["".join(row) for row in rows])
 
     def digit(self, row: int, col: int) -> Digit:
-        return self.null_digit
+        return self.rows[row][col]
 
     def insert(self, digit, row, col):
-        pass
+        # Whole puzzle coordinates -> Box + box coordinates
+        self.rows = self.populate_rows()
+        self.columns = self.populate_columns()
+
+    def delete(self, row, col):
+        # Whole puzzle coordinates -> Box + box coordinates
+        self.rows = self.populate_rows()
+        self.columns = self.populate_columns()
+
+    def legal_digit(self, digit, row, col):
+        return True
 
     def fill_random_square(self, digit: Union[None, Digit] = None):
         if digit is None:
@@ -89,8 +99,9 @@ class Puzzle:
             row = random.choice(range(self.size))
             col = random.choice(range(self.size))
             if not self.digit(row, col).value:
-                self.insert(digit, row, col)
-                filled = True
+                if self.legal_digit(digit, row, col):
+                    self.insert(digit, row, col)
+                    filled = True
 
     def generate_boxes(self):
         boxes = []
