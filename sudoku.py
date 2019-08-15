@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import random
 import sys
 
-from typing import List, Union
+from typing import List, Tuple, Union
 
 from digit import Digit
 from symbols import SYMBOLS
@@ -76,6 +78,14 @@ class Puzzle:
 
     def digit(self, row: int, col: int) -> Digit:
         return self.rows[row][col]
+
+    def box(self, row: int, col: int) -> Box:
+        box_row = int(row / self.complexity)
+        box_col = col % self.complexity
+        return self.boxes[box_row][box_col]
+
+    def box_coordinates(self, row: int, col: int) -> Tuple[int, int]:
+        return self.complexity, self.complexity
 
     def insert(self, digit, row, col):
         # Whole puzzle coordinates -> Box + box coordinates
@@ -168,4 +178,4 @@ class Box:
 
 
 p = Puzzle(3)
-sys.stdout.write(str(p) + "\n\n")
+sys.stdout.write(str(p) + "\n")
