@@ -1,6 +1,7 @@
+import random
 import sys
 
-from typing import List
+from typing import List, Union
 
 from digit import Digit
 from symbols import SYMBOLS
@@ -40,6 +41,7 @@ class Puzzle:
         self.generate_boxes()
         # while not (self.check_sum(self.rows) and self.check_sum(self.columns)):
         #    self.generate_boxes()
+        self.fill_random_square()
 
     def __str__(self):
         rows = []
@@ -71,6 +73,24 @@ class Puzzle:
                 rows.append(spacer_line)
 
         return "\n".join(["".join(row) for row in rows])
+
+    def digit(self, row: int, col: int) -> Digit:
+        return self.null_digit
+
+    def insert(self, digit, row, col):
+        pass
+
+    def fill_random_square(self, digit: Union[None, Digit] = None):
+        if digit is None:
+            digit = self.digits[random.choice(range(self.size))]
+
+        filled = False
+        while not filled:
+            row = random.choice(range(self.size))
+            col = random.choice(range(self.size))
+            if not self.digit(row, col).value:
+                self.insert(digit, row, col)
+                filled = True
 
     def generate_boxes(self):
         boxes = []
@@ -120,23 +140,20 @@ class Box:
             ["".join([str(d) for d in subseq]) for subseq in self.sequence]
         )
 
-    def insert(self, digit: Digit, col: int, row: int):
+    def digits(self):
+        return [d for row in self.sequence for d in row]
+
+    def insert(self, digit: Digit, row: int, col: int):
         if col + 1 > self.complexity or row + 1 > self.complexity or col < 0 or row < 0:
             raise ValueError(
                 "Invalid row, column for {0}x{0} box: ({1},{2})".format(
-                    str(self.complexity), str(col), str(row)
+                    str(self.complexity), str(row), str(col)
                 )
             )
         self.sequence[row][col] = digit
 
-    def delete(self, col: int, row: int):
-        if col + 1 > self.complexity or row + 1 > self.complexity or col < 0 or row < 0:
-            raise ValueError(
-                "Invalid row, column for {0}x{0} box: ({1},{2})".format(
-                    str(self.complexity), str(col), str(row)
-                )
-            )
-        self.sequence[row][col] = self.null_digit
+    def delete(self, row: int, col: int):
+        self.insert(self.null_digit, row, col)
 
 
 class Line:
