@@ -1,6 +1,5 @@
 import sys
 
-from random import shuffle
 from typing import List
 
 from digit import Digit
@@ -28,16 +27,19 @@ class Puzzle:
         else:
             self.complexity = complexity
 
+        if drawing_mode.lower() == "utf8":
+            self.null_digit = Digit("·", 0)
+            self.spacers = [" │ ", "─", "┼"]
+        elif drawing_mode.lower() == "ascii":
+            self.null_digit = Digit(" ", 0)
+            self.spacers = [" | ", "-", "+"]
+        else:
+            self.null_digit = Digit("0", 0)
+            self.spacers = ["  ", " ", " "]
+
         self.generate_boxes()
         # while not (self.check_sum(self.rows) and self.check_sum(self.columns)):
         #    self.generate_boxes()
-
-        if drawing_mode.lower() == "utf8":
-            self.spacers = [" │ ", "─", "┼"]
-        elif drawing_mode.lower() == "ascii":
-            self.spacers = [" | ", "-", "+"]
-        else:
-            self.spacers = ["  ", " ", " "]
 
     def __str__(self):
         rows = []
@@ -74,7 +76,7 @@ class Puzzle:
         boxes = []
         box_row = []
         for i in range(self.size):
-            box_row.append(Box(self.complexity, self.digits))
+            box_row.append(Box(self.complexity, self.null_digit))
             if (i + 1) % self.complexity == 0:
                 boxes.append(box_row)
                 box_row = []
@@ -106,22 +108,35 @@ class Puzzle:
 
 
 class Box:
-    def __init__(self, complexity: int, digits: List[Digit]):
-        size = complexity ** 2
-        self.digits = digits[0:size]
-        shuffle(self.digits)
-        self.sequence: List[List[Digit]] = []
-        subsequence = []
-        for i, digit in enumerate(self.digits):
-            subsequence.append(digit)
-            if (i + 1) % complexity == 0:
-                self.sequence.append(subsequence)
-                subsequence = []
+    def __init__(self, complexity: int, null_digit: Digit):
+        self.complexity = complexity
+        self.null_digit = null_digit
+        self.sequence: List[List[Digit]] = [
+            [self.null_digit] * self.complexity for _ in range(self.complexity)
+        ]
 
     def __str__(self):
         return "\n".join(
-            "".join([d.symbol for d in subseq]) for subseq in self.sequence
+            ["".join([str(d) for d in subseq]) for subseq in self.sequence]
         )
+
+    def insert(self, digit: Digit, col: int, row: int):
+        if col + 1 > self.complexity or row + 1 > self.complexity or col < 0 or row < 0:
+            raise ValueError(
+                "Invalid row, column for {0}x{0} box: ({1},{2})".format(
+                    str(self.complexity), str(col), str(row)
+                )
+            )
+        self.sequence[row][col] = digit
+
+    def delete(self, col: int, row: int):
+        if col + 1 > self.complexity or row + 1 > self.complexity or col < 0 or row < 0:
+            raise ValueError(
+                "Invalid row, column for {0}x{0} box: ({1},{2})".format(
+                    str(self.complexity), str(col), str(row)
+                )
+            )
+        self.sequence[row][col] = self.null_digit
 
 
 class Line:
