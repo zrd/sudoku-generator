@@ -89,13 +89,11 @@ class Puzzle:
 
     def insert(self, digit, row, col):
         # Whole puzzle coordinates -> Box + box coordinates
-        self.rows = self.populate_rows()
-        self.columns = self.populate_columns()
+        self.update_lines()
 
     def delete(self, row, col):
         # Whole puzzle coordinates -> Box + box coordinates
-        self.rows = self.populate_rows()
-        self.columns = self.populate_columns()
+        self.update_lines()
 
     def legal_digit(self, digit, row, col):
         return True
@@ -123,10 +121,10 @@ class Puzzle:
                 box_row = []
 
         self.boxes = boxes
-        self.rows = self.populate_rows()
-        self.columns = self.populate_columns()
+        self.update_lines()
 
-    def populate_rows(self) -> List[List[Digit]]:
+
+    def _populate_rows(self) -> List[List[Digit]]:
         rows = []
         row = []
         for box_row in self.boxes:
@@ -139,13 +137,17 @@ class Puzzle:
 
         return rows
 
-    def populate_columns(self) -> List[List[Digit]]:
+    def _populate_columns(self) -> List[List[Digit]]:
         columns = [[] for _ in range(self.size)]
         for i in range(self.size):
             for j in range(self.size):
                 columns[i].append(self.rows[j][i])
 
         return columns
+
+    def update_lines(self) -> None:
+        self.rows = self._populate_rows()
+        self.columns = self._populate_columns()
 
 
 class Box:
