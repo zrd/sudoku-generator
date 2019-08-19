@@ -79,16 +79,27 @@ class Puzzle:
     def digit(self, row: int, col: int) -> Digit:
         return self.rows[row][col]
 
-    def box(self, row: int, col: int) -> Box:
+    def box(self, row: int, col: int) -> Tuple[int, int]:
+        # TODO: Fix
         box_row = int(row / self.complexity)
         box_col = col % self.complexity
-        return self.boxes[box_row][box_col]
+        return box_row, box_col
 
     def box_coordinates(self, row: int, col: int) -> Tuple[int, int]:
         return self.complexity, self.complexity
 
     def insert(self, digit, row, col):
         # Whole puzzle coordinates -> Box + box coordinates
+        box_row, box_col = self.box(row, col)
+        print(
+            "complexity {}; row {}, modulo {}; col {}, modulo {}: box ({},{})\n".format(
+                self.complexity, row, row % self.complexity, col, col % self.complexity, box_row, box_col
+            )
+        )
+        try:
+            box = self.boxes[box_row][box_col]
+        except IndexError:
+            sys.exit("Invalid box coordinates ({}, {}) for puzzle {}".format(box_row, box_col, self))
         self.update_lines()
 
     def delete(self, row, col):
@@ -122,7 +133,6 @@ class Puzzle:
 
         self.boxes = boxes
         self.update_lines()
-
 
     def _populate_rows(self) -> List[List[Digit]]:
         rows = []
