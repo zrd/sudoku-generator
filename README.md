@@ -1,5 +1,7 @@
 ## sudoku-generator
 
+An example of each drawing mode ("utf8", "ascii", and "whitespace") at each level of complexity from 1 to 6 (1x1 to 36x36 puzzles):
+
 ```
 1
 
