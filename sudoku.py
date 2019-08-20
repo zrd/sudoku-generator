@@ -34,7 +34,7 @@ class Puzzle:
             self.null_digit = Digit("·", 0)
             self.spacers = [" │ ", "─", "┼"]
         elif drawing_mode.lower() == "ascii":
-            self.null_digit = Digit(" ", 0)
+            self.null_digit = Digit(".", 0)
             self.spacers = [" | ", "-", "+"]
         else:
             self.null_digit = Digit("0", 0)
@@ -79,34 +79,49 @@ class Puzzle:
     def digit(self, row: int, col: int) -> Digit:
         return self.rows[row][col]
 
-    def box(self, row: int, col: int) -> Tuple[int, int]:
-        # TODO: Fix
+    def box_coordinates(self, row: int, col: int) -> Tuple[int, int]:
         box_row = int(row / self.complexity)
-        box_col = col % self.complexity
+        box_col = int(col / self.complexity)
         return box_row, box_col
 
-    def box_coordinates(self, row: int, col: int) -> Tuple[int, int]:
-        return self.complexity, self.complexity
+    def inner_coordinates(
+        self, row: int, col: int, puzzle_row: int, puzzle_col: int
+    ) -> Tuple[int, int]:
+        inner_row = (
+            row - (self.complexity * puzzle_row)
+            if puzzle_row < self.complexity
+            else row
+        )
+        inner_col = (
+            col - (self.complexity * puzzle_col)
+            if puzzle_col < self.complexity
+            else col
+        )
+        return inner_row, inner_col
 
     def insert(self, digit, row, col):
-        # Whole puzzle coordinates -> Box + box coordinates
-        box_row, box_col = self.box(row, col)
+        puzzle_row, puzzle_col = self.box_coordinates(row, col)
         print(
-            "complexity {}; row {}, modulo {}; col {}, modulo {}: box ({},{})\n".format(
-                self.complexity, row, row % self.complexity, col, col % self.complexity, box_row, box_col
+            "complexity {}; row {}, col {}: box ({},{})".format(
+                self.complexity, row, col, puzzle_row, puzzle_col
             )
         )
         try:
-            box = self.boxes[box_row][box_col]
+            box = self.boxes[puzzle_row][puzzle_col]
         except IndexError:
-            sys.exit("Invalid box coordinates ({}, {}) for puzzle {}".format(box_row, box_col, self))
+            raise ValueError(
+                "Invalid box coordinates ({}, {}) for puzzle {}".format(
+                    str(puzzle_row), str(puzzle_col), str(self)
+                )
+            )
+        box_row, box_col = self.inner_coordinates(row, col, puzzle_row, puzzle_col)
+        box.insert(digit, box_row, box_col)
         self.update_lines()
 
     def delete(self, row, col):
-        # Whole puzzle coordinates -> Box + box coordinates
-        self.update_lines()
+        self.insert(self.null_digit, row, col)
 
-    def legal_digit(self, digit, row, col):
+    def legal_digit(self, digit: Digit, row: int, col: int) -> bool:
         return True
 
     def fill_random_square(self, digit: Union[None, Digit] = None):
