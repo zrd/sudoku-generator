@@ -140,7 +140,7 @@ class Puzzle:
         while not filled:
             row = random.choice(range(self.size))
             col = random.choice(range(self.size))
-            if not self.digit(row, col).value:
+            if not self.digit(row, col):
                 if self.legal_digit(digit, row, col):
                     self.insert(digit, row, col)
                     filled = True

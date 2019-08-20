@@ -8,3 +8,6 @@ class Digit:
 
     def __str__(self):
         return self.symbol
+
+    def __bool__(self):
+        return bool(self.value)
