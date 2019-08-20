@@ -56,6 +56,7 @@ class Puzzle:
             for j, digit in enumerate(row):
                 if j > 0 and j % self.complexity == 0:
                     pretty_row.append(vertical_spacer)
+
                 pretty_row.append(digit.symbol)
 
             rows.append(pretty_row)
