@@ -19,7 +19,6 @@ class Puzzle:
             else:
                 break
 
-        self.digits.sort()
         max_complexity = int(len(SYMBOLS) ** (1 / 2))
         if complexity < 1 or complexity > max_complexity:
             raise ValueError(
@@ -41,9 +40,8 @@ class Puzzle:
             self.spacers = ["  ", " ", " "]
 
         self.generate_boxes()
-        # while not (self.check_sum(self.rows) and self.check_sum(self.columns)):
-        #    self.generate_boxes()
-        self.fill_random_square()
+        for _ in range(self.size):
+            self.fill_random_square()
 
     def __str__(self):
         rows = []
@@ -105,11 +103,6 @@ class Puzzle:
 
     def insert(self, digit, row, col):
         puzzle_row, puzzle_col = self.box_coordinates(row, col)
-        print(
-            "complexity {}; row {}, col {}: box ({},{})".format(
-                self.complexity, row, col, puzzle_row, puzzle_col
-            )
-        )
         try:
             box = self.boxes[puzzle_row][puzzle_col]
         except IndexError:
