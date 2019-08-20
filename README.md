@@ -1,4 +1,4 @@
-##sudoku-generator
+## sudoku-generator
 
 ```
 1
