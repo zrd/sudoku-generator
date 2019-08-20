@@ -84,6 +84,10 @@ class Puzzle:
         box_col = int(col / self.complexity)
         return box_row, box_col
 
+    def box(self, row: int, col: int) -> Box:
+        puzzle_row, puzzle_col = self.box_coordinates(row, col)
+        return self.boxes[puzzle_row][puzzle_col]
+
     def inner_coordinates(
         self, row: int, col: int, puzzle_row: int, puzzle_col: int
     ) -> Tuple[int, int]:
@@ -122,7 +126,11 @@ class Puzzle:
         self.insert(self.null_digit, row, col)
 
     def legal_digit(self, digit: Digit, row: int, col: int) -> bool:
-        return True
+        return (
+            digit not in self.rows[row]
+            and digit not in self.columns[col]
+            and digit not in self.box(row, col).digits()
+        )
 
     def fill_random_square(self, digit: Union[None, Digit] = None):
         if digit is None:
