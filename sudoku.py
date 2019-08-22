@@ -49,7 +49,7 @@ class Puzzle:
         self.unsolved_states = copy.deepcopy(self.boxes)
 
     def __str__(self):
-        rows = []
+        pretty_rows = []
         pretty_row = []
         vertical_spacer, horizontal_spacer, juncture = self.spacers
         unit_width = (
@@ -64,7 +64,7 @@ class Puzzle:
 
                 pretty_row.append(digit.symbol)
 
-            rows.append(pretty_row)
+            pretty_rows.append(pretty_row)
             pretty_len = sum([len(d) for d in pretty_row])
             adjustment = len(vertical_spacer) - int(len(vertical_spacer) / 2) or 1
             pretty_row = []
@@ -76,9 +76,9 @@ class Puzzle:
                     else:
                         spacer_line.append(horizontal_spacer)
 
-                rows.append(spacer_line)
+                pretty_rows.append(spacer_line)
 
-        return "\n".join(["".join(row) for row in rows])
+        return "\n".join(["".join(row) for row in pretty_rows])
 
     def digit(self, row: int, col: int) -> Digit:
         return self.rows[row][col]
