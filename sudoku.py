@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import copy
 import random
 import sys
 
-from typing import List, Tuple, Union
+from typing import Collection, List, Optional, Tuple, Union
 
 from digit import Digit
 from symbols import SYMBOLS
@@ -39,9 +40,13 @@ class Puzzle:
             self.null_digit = Digit("0", 0)
             self.spacers = ["  ", " ", " "]
 
-        self.generate_boxes()
+        self.initial_state = self.generate_boxes()
+        self.boxes = copy.deepcopy(self.initial_state)
         for _ in range(self.size):
             self.fill_random_square()
+
+        self.solved_states = []
+        self.unsolved_states = copy.deepcopy(self.boxes)
 
     def __str__(self):
         rows = []
@@ -148,13 +153,18 @@ class Puzzle:
                 boxes.append(box_row)
                 box_row = []
 
-        self.boxes = boxes
-        self.update_lines()
+        self.update_lines(boxes)
+        return boxes
 
-    def _populate_rows(self) -> List[List[Digit]]:
+    def _populate_rows(
+        self, boxes: Collection[Union[None, Box]] = None
+    ) -> List[List[Digit]]:
+        if boxes is None:
+            boxes = self.boxes
+
         rows = []
         row = []
-        for box_row in self.boxes:
+        for box_row in boxes:
             for i in range(self.complexity):
                 for j, box in enumerate(box_row):
                     row += box.sequence[i]
@@ -172,8 +182,8 @@ class Puzzle:
 
         return columns
 
-    def update_lines(self) -> None:
-        self.rows = self._populate_rows()
+    def update_lines(self, boxes: Optional[Collection[Collection[Box]]] = None) -> None:
+        self.rows = self._populate_rows(boxes)
         self.columns = self._populate_columns()
 
 
@@ -194,19 +204,21 @@ class Box:
         return [d for row in self.sequence for d in row]
 
     def insert(self, digit: Digit, row: int, col: int):
-        if col + 1 > self.complexity or row + 1 > self.complexity or col < 0 or row < 0:
+        try:
+            self.sequence[row][col] = digit
+        except IndexError:
             raise ValueError(
                 "Invalid row, column for {0}x{0} box: ({1},{2})".format(
                     str(self.complexity), str(row), str(col)
                 )
             )
-        self.sequence[row][col] = digit
 
     def delete(self, row: int, col: int):
         self.insert(self.null_digit, row, col)
 
 
-for sz in range(1, 7):
-    for dm in ("utf8", "ascii", "whitespace"):
-        p = Puzzle(sz, drawing_mode=dm)
-        sys.stdout.write(str(p) + "\n\n")
+if __name__ == "__main__":
+    for sz in range(1, 7):
+        for dm in ("utf8", "ascii", "whitespace"):
+            p = Puzzle(sz, drawing_mode=dm)
+            sys.stdout.write(str(p) + "\n\n")
