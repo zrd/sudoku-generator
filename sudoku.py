@@ -30,12 +30,13 @@ class Puzzle:
         else:
             self.complexity = complexity
 
-        if drawing_mode.lower() == "utf8":
+        dm_lower = drawing_mode.lower()
+        if dm_lower == "ascii":
+            self.null_digit = Digit(".", 0)
+            self.spacers = ["|", "-", "+"]
+        elif dm_lower.startswith(("utf", "unicode")):
             self.null_digit = Digit("·", 0)
             self.spacers = [" │ ", "─", "┼"]
-        elif drawing_mode.lower() == "ascii":
-            self.null_digit = Digit(".", 0)
-            self.spacers = [" | ", "-", "+"]
         else:
             self.null_digit = Digit("0", 0)
             self.spacers = ["  ", " ", " "]
@@ -66,8 +67,8 @@ class Puzzle:
 
             pretty_rows.append(pretty_row)
             pretty_len = sum([len(d) for d in pretty_row])
-            adjustment = len(vertical_spacer) - int(len(vertical_spacer) / 2) or 1
             pretty_row = []
+            adjustment = len(vertical_spacer) - int(len(vertical_spacer) / 2) or 1
             spacer_line = []
             if (i + 1) < self.size and (i + 1) % self.complexity == 0:
                 for k in range(pretty_len):
@@ -219,6 +220,6 @@ class Box:
 
 if __name__ == "__main__":
     for sz in range(1, 7):
-        for dm in ("utf8", "ascii", "whitespace"):
+        for dm in ("utf-9000", "ascii", "whitespace"):
             p = Puzzle(sz, drawing_mode=dm)
             sys.stdout.write(str(p) + "\n\n")
